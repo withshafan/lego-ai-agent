@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
-- **Current stage:** Stage 8 — Local FastAPI backend
-- **Current step:** 8.15 — Verify live API dispatch launches the allowlisted low-risk app
+- **Current stage:** Desktop UI/UX — local web interface
+- **Current step:** UI.2 — Implement the first local chat screen from the approved design baseline
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -55,8 +55,10 @@
   - Stage 8.12 — Added `POST /tools/dispatch`; approval-required calls default to denied, explicit approval is forwarded to the registry, request extras are rejected, and audit output logs metadata only. All 35 tests passed locally.
   - Stage 8.13 — User confirmed all 35 tests pass on Windows.
   - Stage 8.14 — User verified live `POST /tools/dispatch` denied `create_text_file` without approval and confirmed the target file was not created.
+  - Stage 8.15 — User verified live API dispatch opened the allowlisted Notepad application successfully.
+  - UI.1 — Wrote `docs/desktop-ui-ux.md`, defining the local-first layout, chat, tool catalog, exact-content approval review, accessibility, and API contracts; frontend code has not started yet.
 - **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account.
-- **Deferred:** Desktop UI/UX and web UI begin after the local API is working; Flutter Android remote control is later roadmap work.
+- **Deferred:** Flutter Android remote control remains later roadmap work; the local web UI is now the active phase.
 - **Exact next step:** Pull this change and run the full test suite using the Windows Python 3.12 virtual environment.
 
 File access remains restricted to `D:\pyProjects\lego-workspace`. File writes require registry approval; overwriting requires explicit approval. The app launcher uses only the fixed Notepad entry and never invokes a shell. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.
