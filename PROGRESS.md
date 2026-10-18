@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
-- **Current stage:** Stage 6 — Terminal chat with the local model
-- **Current step:** 6.5 — Verify interactive terminal chat
+- **Current stage:** Stage 7 — Safe local tools
+- **Current step:** 7.1 — Create and verify the single approved folder
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -26,10 +26,11 @@
   - Stage 5.2 — Async HTTPX request to `/api/tags` returned `llama3.2:3b` and its model details.
   - Stage 6.1 — Verified `lego.APP_NAME` and `lego.__version__` from the Python 3.12 virtual environment.
   - Stage 6.2 — Validated `models/config.json`; it selects `llama3.2:3b`, localhost Ollama, context 4096, temperature 0.2, and seed 42.
-  - Stage 6.3 — Added an async HTTPX Ollama client with validated local-only settings and readable connection errors; Python syntax compilation passed and the user verified a live response.
+  - Stage 6.3 — Added an async HTTPX Ollama client with validated local-only settings and readable errors; user verified a live response.
   - Stage 6.4 — Added the system prompt and terminal CLI; user verified one-shot mode returned `LOCAL CLI WORKS`.
+  - Stage 6.5 — User verified interactive chat, received the required self-introduction, exited with `/exit`, and pulled the active branch successfully using an explicit remote and branch.
 - **Known issues:** The bare `ollama` command is not resolved by PowerShell; use the full executable path. Keep the Ollama server terminal open during local requests.
 - **Deferred:** None.
-- **Exact next step:** Run `python -m lego.cli` from the Python 3.12 virtual environment, exchange one message, and exit with `/exit`.
+- **Exact next step:** Create the space-free approved workspace folder `D:\pyProjects\lego-workspace` outside the Git repository and verify its path.
 
-The repository now has a working one-shot terminal client and an interactive chat mode. Model weights remain outside the repository and user profile. Ollama is bound to `127.0.0.1:11434`, with CPU inference and a 4096-token request context.
+The project now has a working local terminal chat. The next phase is limited to approved tools; file access must remain inside one separate approved folder. Model weights remain outside the repository and user profile.
