@@ -1,6 +1,6 @@
 # Local Media Attachments — Implementation Plan
 
-**Status:** Planned; no upload endpoint or media dependencies are active yet. Keep the current UI appearance stable; defer visual polish until the end of the creation phase.
+**Status:** PDF text upload is implemented; Windows verification is pending. Image/video support remains planned. Keep the current UI appearance stable; defer visual polish until the end of the creation phase.
 
 ## Goals and boundaries
 
@@ -15,8 +15,8 @@
 
 ### 1. PDF text extraction
 
-- Add a local multipart upload flow and extract embedded text from ordinary PDFs with a free local Python library.
-- Start with one PDF per request, a configurable 10 MiB upload limit, a 40-page limit, and a 20,000-character extracted-text cap.
+- Accept one user-selected PDF as the raw request body at `POST /chat/pdf`; send the question in the `X-Chat-Message` header and extract embedded text with the free local `pypdf` library.
+- Enforce a 10 MiB upload limit, a 40-page limit, a 12,000-character extracted-text cap, and a 4,000-character question limit.
 - Keep the original file in memory; do not save it to disk. Return a clear message when the PDF is encrypted, malformed, over a limit, or has no extractable text.
 - Scanned/image-only PDFs are not OCR'd in this first PDF step. Add local OCR only after selecting and testing a zero-cost offline package/model.
 

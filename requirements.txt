@@ -3,5 +3,6 @@ uvicorn[standard]
 httpx
 pydantic>=2,<3
 pydantic-settings
+pypdf
 pytest
 pytest-asyncio

@@ -147,6 +147,14 @@ h1, h2, p { margin-top: 0; }
 .composer:focus-within { border-color: #aab99d; box-shadow: 0 0 0 3px rgba(83, 111, 66, 0.09); }
 .composer textarea { width: 100%; min-height: 38px; max-height: 140px; resize: vertical; border: 0; outline: 0; color: var(--ink); background: transparent; font-size: 13px; line-height: 1.5; }
 .composer textarea::placeholder { color: #a2a69d; }
+.attachment-row { min-height: 30px; margin: 3px 0 7px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.attachment-actions { display: flex; align-items: center; gap: 10px; }
+.attach-button, .remove-attachment { padding: 6px 9px; border: 1px solid var(--line); border-radius: 8px; background: #fbfcf9; color: #59644f; font-size: 10px; font-weight: 700; }
+.attach-button:hover, .remove-attachment:hover { border-color: #bdc9b4; background: #f4f7f0; }
+.selected-attachment { max-width: 55%; display: flex; align-items: center; gap: 8px; color: #59644f; font-size: 10px; }
+.selected-attachment span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.remove-attachment { padding: 4px 7px; color: #767d70; font-weight: 600; }
+#selectedPdfStatus[hidden] { display: none; }
 .composer-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .composer-hint { color: #92978d; font-size: 10px; }
 .send-button { min-width: 77px; padding: 8px 11px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 9px; color: #fff; background: var(--green); font-size: 11px; font-weight: 700; transition: background 120ms ease, transform 120ms ease; }

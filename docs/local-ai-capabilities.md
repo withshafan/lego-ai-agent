@@ -1,13 +1,13 @@
 # LEGO AI Agent — Local AI Capabilities Roadmap
 
-**Status:** Requested capabilities recorded; no new model or media package has been installed. UI polish remains deferred until the end of the creation phase.
+**Status:** The local PDF upload path is implemented with `pypdf`; Windows verification is pending. No new model weights have been installed. UI polish remains deferred until the end of the creation phase.
 
 ## Requested local capabilities
 
 | Capability | Local processing plan | Current status |
 | --- | --- | --- |
 | Text chat | Ollama with `llama3.2:3b` | Working |
-| PDF input | Extract embedded PDF text in memory, then send it to the text model | Next implementation phase |
+| PDF input | Extract embedded PDF text in memory, then send it to the text model | Implemented; Windows verification pending |
 | Image understanding | Send selected image bytes to a local vision model | Requires separate vision-capable model and hardware check |
 | Video understanding | Sample a small number of frames locally; optionally transcribe audio locally | Later, after vision and speech-to-text work |
 | Speech-to-text (STT) | Use a local transcription engine for selected audio or microphone input | Planned; choose model/runtime after hardware check |
