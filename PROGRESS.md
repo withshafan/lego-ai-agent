@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Stage 7 — Safe local tools
-- **Current step:** 7.2 — Sync and verify the approved-folder allowlist
+- **Current step:** 7.4 — Sync and run the sandbox tests on Windows
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -28,10 +28,12 @@
   - Stage 6.2 — Validated `models/config.json`; it selects `llama3.2:3b`, localhost Ollama, context 4096, temperature 0.2, and seed 42.
   - Stage 6.3 — Added an async HTTPX Ollama client; user verified a live response.
   - Stage 6.4 — Added the system prompt and terminal CLI; user verified one-shot mode returned `LOCAL CLI WORKS`.
-  - Stage 6.5 — User verified interactive chat, exited with `/exit`, and pulled the active branch with an explicit remote and branch.
-  - Stage 7.1 — User created and verified the approved folder `D:\pyProjects\lego-workspace` outside the repository.
-- **Known issues:** The Git local branch has ambiguous upstream settings; sync with `git pull --ff-only origin arena/468202c8-lego-ai-agent`. The bare `ollama` command is not resolved; use its full path.
+  - Stage 6.5 — User verified interactive chat, exited with `/exit`, and pulled the active branch using the explicit remote and branch.
+  - Stage 7.1 — User created and verified `D:\pyProjects\lego-workspace` outside the repository.
+  - Stage 7.2 — Added `backend/lego/config/allowed_folders.txt`; user verified the single path.
+  - Stage 7.3 — Implemented the one-root path sandbox, traversal/outside/symlink checks, and nine focused tests; all nine passed in the development environment.
+- **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink test may be skipped if symlink creation is disabled for the account.
 - **Deferred:** None.
-- **Exact next step:** Pull the current branch and verify `backend/lego/config/allowed_folders.txt` contains only `D:\pyProjects\lego-workspace`.
+- **Exact next step:** Pull the latest branch on Windows and run `backend/tests/test_sandbox.py` with the project virtual environment.
 
-The project has a local terminal chat. Safe tools must be restricted to the single approved folder. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.
+File access remains restricted to `D:\pyProjects\lego-workspace`. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.
