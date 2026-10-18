@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Work-focused local agent core
-- **Current step:** Agent.2 — Pull the no-attachment baseline and run the Windows test suite
+- **Current step:** Agent.3 — Pull and verify the safe `/agent/task` planner on Windows
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -67,9 +67,11 @@
   - Media.2 — User pulled and reviewed the expanded capabilities roadmap.
   - Media.3 — Added an in-memory PDF upload path and browser control; user reported the live upload did not work despite 43 tests passing.
   - Media.4 — Removed the PDF attachment control, endpoint, `pypdf` dependency, and PDF-specific tests at the user's request; media uploads are paused.
-  - Agent.1 — Updated the product roadmap to prioritize safe task execution through registered local tools rather than a text-only chat experience. Visual redesign remains deferred; all 37 tests pass locally.
-- **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account.
+  - Agent.1 — Updated the product roadmap to prioritize safe task execution through registered local tools rather than a text-only chat experience. Visual redesign remains deferred; all 37 baseline tests passed locally and on Windows.
+  - Agent.2 — Added Ollama tool-call proposal parsing and `POST /agent/task`. Proposals are validated against the registered tool schemas; only tools marked as not requiring approval can run. Approval-required actions are returned for review without dispatch, unknown or invalid proposals are rejected, and multi-action proposals run nothing. Audit logs contain metadata only.
+  - Agent.2 tests — Added planner/client, registry-preparation, approval-gate, unknown-tool, and multi-proposal tests. Full suite passes locally: **47 passed**.
+- **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account. The planner endpoint is not yet connected to the browser composer or an approval review UI.
 - **Deferred:** PDF/image/video/speech attachment features remain paused until core task execution is working. UI/UX polish stays at the current baseline until the end of the creation phase. No model download is authorized; Flutter Android remote control remains later roadmap work.
-- **Exact next step:** Pull this change and run the full test suite using the Windows Python 3.12 virtual environment.
+- **Exact next step:** In PowerShell, from `D:\pyProjects\lego-ai-agent`, run `git pull --ff-only origin arena/468202c8-lego-ai-agent; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; & .\.venv\Scripts\python.exe -m pytest -q backend\tests` and report the full test result. Expected: **47 passed** (symlink cases may be skipped if Windows symlinks are unavailable).
 
 File access remains restricted to `D:\pyProjects\lego-workspace`. File writes require registry approval; overwriting requires explicit approval. The app launcher uses only the fixed Notepad entry and never invokes a shell. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.

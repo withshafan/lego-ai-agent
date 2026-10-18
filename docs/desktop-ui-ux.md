@@ -1,6 +1,6 @@
 # LEGO AI Agent — Desktop UI/UX v1
 
-**Status:** Design baseline for the local desktop web interface. This document defines the first implementation scope; it does not add frontend code yet.
+**Status:** Design baseline for the existing local desktop web interface. UI refinements and the task-composer integration remain deferred.
 
 ## Product goals
 
@@ -56,11 +56,12 @@
 
 - `GET /health` — local backend status.
 - `POST /chat` — one plain-text message and one reply; it does not execute tools.
+- `POST /agent/task` — proposes one registered action, executes only actions whose registry metadata does not require approval, and returns approval-required actions without executing them. Multiple proposals are rejected for clarification.
 - `GET /tools` — fixed registry schemas and safety metadata.
 - `POST /tools/dispatch` — fixed registry dispatch; approval is false unless explicitly supplied.
-- A task-planning flow that connects user requests to safe registered tools is not implemented yet; this is the next core capability.
+- The task endpoint is implemented but is not yet connected to the frontend composer or an approval review UI.
 
-All browser requests must use relative same-origin paths (`/health`, `/chat`, `/tools`, `/tools/dispatch`), not hard-coded `localhost` or `127.0.0.1` URLs.
+All browser requests must use relative same-origin paths (`/health`, `/chat`, `/agent/task`, `/tools`, `/tools/dispatch`), not hard-coded `localhost` or `127.0.0.1` URLs.
 
 ## v1 acceptance criteria
 

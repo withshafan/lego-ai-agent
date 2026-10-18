@@ -33,6 +33,14 @@ class ToolSpec:
     function: ToolFunction
 
 
+@dataclass(frozen=True)
+class PreparedToolCall:
+    """Validated tool arguments and metadata, without running the tool."""
+
+    spec: ToolSpec
+    arguments: BaseModel
+
+
 _REGISTRY: dict[str, ToolSpec] = {}
 
 
@@ -88,6 +96,28 @@ def schemas() -> list[dict[str, Any]]:
     ]
 
 
+def prepare(name: str, args: dict[str, Any]) -> PreparedToolCall | ToolResult:
+    """Validate a registered action without executing it or bypassing approval."""
+    spec = _REGISTRY.get(name)
+    if spec is None:
+        return ToolResult(
+            success=False,
+            message="The requested tool is not registered.",
+            error="Unknown tool.",
+        )
+
+    try:
+        validated_args = spec.args_model.model_validate(args)
+    except (ValidationError, TypeError):
+        return ToolResult(
+            success=False,
+            message="The tool arguments are invalid.",
+            error="Argument validation failed.",
+        )
+
+    return PreparedToolCall(spec=spec, arguments=validated_args)
+
+
 def dispatch(
     name: str,
     args: dict[str, Any],
@@ -110,17 +140,12 @@ def dispatch(
             error="Approval required.",
         )
 
-    try:
-        validated_args = spec.args_model.model_validate(args)
-    except (ValidationError, TypeError):
-        return ToolResult(
-            success=False,
-            message="The tool arguments are invalid.",
-            error="Argument validation failed.",
-        )
+    prepared = prepare(name, args)
+    if isinstance(prepared, ToolResult):
+        return prepared
 
     try:
-        result = spec.function(validated_args)
+        result = prepared.spec.function(prepared.arguments)
     except Exception:
         return ToolResult(
             success=False,

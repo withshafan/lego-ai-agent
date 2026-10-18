@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-from lego.tools.registry import ToolResult, dispatch, schemas, tool
+from lego.tools.registry import ToolResult, dispatch, prepare, schemas, tool
 
 
 class EchoArgs(BaseModel):
@@ -42,6 +42,27 @@ def test_schemas_expose_registered_tool_metadata() -> None:
     assert registered["registry_test_echo"]["parameters"]["properties"]["text"]
     assert registered["registry_test_echo"]["risk"] == "low"
     assert registered["registry_test_echo"]["requires_approval"] is False
+
+
+def test_prepare_validates_without_executing_tool() -> None:
+    _approved_calls.clear()
+    prepared = prepare("registry_test_approved", {"text": "proposal only"})
+
+    assert not isinstance(prepared, ToolResult)
+    assert prepared.spec.name == "registry_test_approved"
+    assert prepared.spec.requires_approval is True
+    assert prepared.arguments.model_dump() == {"text": "proposal only"}
+    assert _approved_calls == []
+
+
+def test_prepare_rejects_unknown_tools_and_invalid_arguments() -> None:
+    unknown = prepare("not_registered", {})
+    invalid = prepare("registry_test_echo", {"wrong": "value"})
+
+    assert isinstance(unknown, ToolResult)
+    assert unknown.error == "Unknown tool."
+    assert isinstance(invalid, ToolResult)
+    assert invalid.error == "Argument validation failed."
 
 
 def test_dispatch_validates_and_calls_registered_tool() -> None:

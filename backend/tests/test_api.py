@@ -3,8 +3,8 @@ import pytest
 
 import lego.api.app as api_module
 from lego.api.app import app
-from lego.agent.llm import OllamaError
-from lego.agent.prompts import CHAT_SYSTEM_PROMPT
+from lego.agent.llm import ChatWithToolsResponse, ModelToolCall, OllamaError
+from lego.agent.prompts import CHAT_SYSTEM_PROMPT, TASK_PLANNER_SYSTEM_PROMPT
 from lego.tools.registry import ToolResult
 
 
@@ -151,6 +151,146 @@ async def test_tool_dispatch_rejects_unexpected_request_fields() -> None:
     )
 
     assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_agent_task_returns_text_when_model_proposes_no_tool(monkeypatch) -> None:
+    received_messages: list[dict[str, str]] = []
+    received_tools: list[dict[str, object]] = []
+
+    async def fake_chat_with_tools(messages, tools) -> ChatWithToolsResponse:
+        received_messages.extend(messages)
+        received_tools.extend(tools)
+        return ChatWithToolsResponse(content="Here is a simple answer.")
+
+    monkeypatch.setattr(api_module, "chat_with_tools", fake_chat_with_tools)
+    response = await _post_json("/agent/task", {"message": "What is LEGO?"})
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": "answered",
+        "message": "Here is a simple answer.",
+        "action": None,
+        "result": None,
+    }
+    assert received_messages == [
+        {"role": "system", "content": TASK_PLANNER_SYSTEM_PROMPT},
+        {"role": "user", "content": "What is LEGO?"},
+    ]
+    function_names = {
+        item["function"]["name"]  # type: ignore[index]
+        for item in received_tools
+    }
+    assert {"open_allowed_app", "create_text_file"}.issubset(function_names)
+
+
+@pytest.mark.asyncio
+async def test_agent_task_proposes_approval_required_action_without_dispatch(
+    monkeypatch,
+) -> None:
+    dispatch_calls: list[tuple[str, dict[str, object], bool]] = []
+
+    async def fake_chat_with_tools(_messages, _tools) -> ChatWithToolsResponse:
+        return ChatWithToolsResponse(
+            tool_calls=[
+                ModelToolCall(
+                    name="create_text_file",
+                    arguments={
+                        "path": "proposed.txt",
+                        "content": "must not be written yet",
+                        "overwrite": False,
+                    },
+                )
+            ]
+        )
+
+    def fake_dispatch(name, arguments, *, approved=False) -> ToolResult:
+        dispatch_calls.append((name, arguments, approved))
+        return ToolResult(success=True, message="Unexpected dispatch")
+
+    monkeypatch.setattr(api_module, "chat_with_tools", fake_chat_with_tools)
+    monkeypatch.setattr(api_module, "dispatch", fake_dispatch)
+    response = await _post_json("/agent/task", {"message": "Create a note"})
+
+    body = response.json()
+    assert response.status_code == 200
+    assert body["status"] == "approval_required"
+    assert body["action"]["name"] == "create_text_file"
+    assert body["action"]["requires_approval"] is True
+    assert body["action"]["arguments"]["path"] == "proposed.txt"
+    assert body["result"] is None
+    assert dispatch_calls == []
+
+
+@pytest.mark.asyncio
+async def test_agent_task_dispatches_only_non_approval_tool(monkeypatch) -> None:
+    dispatch_calls: list[tuple[str, dict[str, object], bool]] = []
+
+    async def fake_chat_with_tools(_messages, _tools) -> ChatWithToolsResponse:
+        return ChatWithToolsResponse(
+            tool_calls=[
+                ModelToolCall(
+                    name="open_allowed_app",
+                    arguments={"app": "notepad"},
+                )
+            ]
+        )
+
+    def fake_dispatch(name, arguments, *, approved=False) -> ToolResult:
+        dispatch_calls.append((name, arguments, approved))
+        return ToolResult(success=True, message="Opened the approved application.")
+
+    monkeypatch.setattr(api_module, "chat_with_tools", fake_chat_with_tools)
+    monkeypatch.setattr(api_module, "dispatch", fake_dispatch)
+    response = await _post_json("/agent/task", {"message": "Open Notepad"})
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "completed"
+    assert dispatch_calls == [
+        ("open_allowed_app", {"app": "notepad"}, False)
+    ]
+
+
+@pytest.mark.asyncio
+async def test_agent_task_refuses_multiple_proposals_and_unknown_tools(monkeypatch) -> None:
+    dispatch_calls: list[bool] = []
+
+    async def two_calls(_messages, _tools) -> ChatWithToolsResponse:
+        call = ModelToolCall(name="open_allowed_app", arguments={"app": "notepad"})
+        return ChatWithToolsResponse(tool_calls=[call, call])
+
+    monkeypatch.setattr(api_module, "chat_with_tools", two_calls)
+    monkeypatch.setattr(
+        api_module,
+        "dispatch",
+        lambda *_args, **_kwargs: dispatch_calls.append(True),
+    )
+    multiple = await _post_json("/agent/task", {"message": "Do two things"})
+    assert multiple.json()["status"] == "clarification"
+    assert dispatch_calls == []
+
+    async def unknown_call(_messages, _tools) -> ChatWithToolsResponse:
+        return ChatWithToolsResponse(
+            tool_calls=[ModelToolCall(name="run_shell", arguments={"command": "dir"})]
+        )
+
+    monkeypatch.setattr(api_module, "chat_with_tools", unknown_call)
+    unknown = await _post_json("/agent/task", {"message": "Run a command"})
+    assert unknown.json()["status"] == "failed"
+    assert unknown.json()["result"]["error"] == "Unknown tool."
+    assert dispatch_calls == []
+
+
+@pytest.mark.asyncio
+async def test_agent_task_returns_safe_error_when_local_model_fails(monkeypatch) -> None:
+    async def failed_chat_with_tools(_messages, _tools):
+        raise OllamaError("private local configuration detail")
+
+    monkeypatch.setattr(api_module, "chat_with_tools", failed_chat_with_tools)
+    response = await _post_json("/agent/task", {"message": "Open Notepad"})
+
+    assert response.status_code == 503
+    assert "private local configuration detail" not in response.text
 
 
 @pytest.mark.asyncio
