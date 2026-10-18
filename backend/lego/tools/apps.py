@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from lego.tools.registry import ToolResult, tool
 
@@ -19,7 +19,21 @@ class OpenAllowedAppArgs(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    app: str = Field(default="notepad", min_length=1, max_length=40, pattern=r"^[a-z0-9_]+$")
+    app: str = Field(
+        default="notepad",
+        min_length=1,
+        max_length=40,
+        pattern=r"^[a-z0-9_]+$",
+        description="Lowercase allowlist key, such as 'notepad'.",
+    )
+
+    @field_validator("app", mode="before")
+    @classmethod
+    def normalize_app_key(cls, value: Any) -> Any:
+        """Accept natural capitalization while keeping the allowlist key strict."""
+        if isinstance(value, str):
+            return value.strip().casefold()
+        return value
 
 
 @tool(name="open_allowed_app", risk="low", requires_approval=False)

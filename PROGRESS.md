@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Work-focused local agent core
-- **Current step:** Agent.5a — Diagnose the invalid live tool proposal before retrying
+- **Current step:** Agent.6 — Pull and verify tolerant app-key validation on Windows
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -72,9 +72,10 @@
   - Agent.2 tests — Added planner/client, registry-preparation, approval-gate, unknown-tool, and multi-proposal tests. Full suite passes locally: **47 passed**.
   - Agent.3 — User pulled the task planner and confirmed **47 tests pass on Windows**.
   - Agent.4 — User started the updated FastAPI server on localhost.
-  - Agent.5 — The live `/agent/task` request returned `The tool arguments are invalid.` The backend rejected the proposal before dispatch; check the metadata-only audit line to identify the proposed registered tool before retrying.
-- **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account. The planner endpoint is not yet connected to the browser composer or an approval review UI. Live task planning currently receives an invalid tool argument; diagnose from the API audit line before retrying.
+  - Agent.5 — User's live `/agent/task` request returned `The tool arguments are invalid.` The backend rejected the proposal before dispatch. The provided transcript showed the app-key schema requires lowercase but did not include the audit line identifying which tool the model proposed.
+  - Agent.5a — Made app-key validation case/whitespace tolerant (`Notepad` normalizes to `notepad`) while retaining the lowercase format check and allowlist enforcement. Clarified the key in the tool schema. Full suite passes locally: **48 passed**.
+- **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account. The planner endpoint is not yet connected to the browser composer or an approval review UI. The live invalid-argument response's proposed tool is still unknown because its API audit line was not included; the app-key normalization fix is a likely, not yet confirmed, correction.
 - **Deferred:** PDF/image/video/speech attachment features remain paused until core task execution is working. UI/UX polish stays at the current baseline until the end of the creation phase. No model download is authorized; Flutter Android remote control remains later roadmap work.
-- **Exact next step:** In the PowerShell window running Uvicorn, copy the latest metadata-only log line beginning `agent_task status=failed` and share it. It identifies the proposed tool without recording its arguments or content.
+- **Exact next step:** In PowerShell, from `D:\pyProjects\lego-ai-agent`, run `git pull --ff-only origin arena/468202c8-lego-ai-agent; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; & .\.venv\Scripts\python.exe -m pytest -q backend\tests`. Expected: **48 passed** (symlink-related tests may be skipped if Windows symlinks are unavailable).
 
 File access remains restricted to `D:\pyProjects\lego-workspace`. File writes require registry approval; overwriting requires explicit approval. The app launcher uses only the fixed Notepad entry and never invokes a shell. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.

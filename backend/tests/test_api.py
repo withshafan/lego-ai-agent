@@ -231,7 +231,7 @@ async def test_agent_task_dispatches_only_non_approval_tool(monkeypatch) -> None
             tool_calls=[
                 ModelToolCall(
                     name="open_allowed_app",
-                    arguments={"app": "notepad"},
+                    arguments={"app": "Notepad"},
                 )
             ]
         )

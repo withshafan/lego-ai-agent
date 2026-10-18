@@ -29,6 +29,25 @@ def test_open_allowed_app_uses_only_fixed_allowlisted_arguments(
     assert calls == [(["notepad.exe"], False)]
 
 
+def test_open_allowed_app_normalizes_name_case_without_bypassing_allowlist(
+    monkeypatch, tmp_path: Path
+) -> None:
+    config_path = tmp_path / "allowed_apps.json"
+    _write_apps_config(config_path, {"command": "notepad.exe", "args": []})
+    monkeypatch.setattr(apps_module, "_APPS_CONFIG_PATH", config_path)
+    calls: list[tuple[list[str], bool]] = []
+    monkeypatch.setattr(
+        apps_module.subprocess,
+        "Popen",
+        lambda command, *, shell: calls.append((command, shell)),
+    )
+
+    result = dispatch("open_allowed_app", {"app": " Notepad "})
+
+    assert result.success is True
+    assert calls == [(["notepad.exe"], False)]
+
+
 def test_open_allowed_app_rejects_unlisted_application(monkeypatch, tmp_path: Path) -> None:
     config_path = tmp_path / "allowed_apps.json"
     _write_apps_config(config_path, {"command": "notepad.exe", "args": []})
