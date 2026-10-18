@@ -1,11 +1,14 @@
 """Local FastAPI entry point for LEGO AI Agent."""
 
+from typing import Any
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, field_validator
 
 from lego import APP_NAME, __version__
 from lego.agent.llm import OllamaError, chat
 from lego.agent.prompts import CHAT_SYSTEM_PROMPT
+from lego.tools.registry import schemas as tool_schemas
 
 app = FastAPI(title=APP_NAME, version=__version__)
 
@@ -34,6 +37,12 @@ class ChatResponse(BaseModel):
 def health() -> dict[str, str]:
     """Report that the local backend process is responding."""
     return {"status": "ok", "app": APP_NAME, "version": __version__}
+
+
+@app.get("/tools", tags=["tools"])
+def list_tools() -> list[dict[str, Any]]:
+    """Return schemas and safety metadata for explicitly registered tools."""
+    return tool_schemas()
 
 
 @app.post("/chat", response_model=ChatResponse, tags=["chat"])

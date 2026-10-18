@@ -34,6 +34,22 @@ async def test_health_endpoint_returns_local_backend_status() -> None:
 
 
 @pytest.mark.asyncio
+async def test_tools_endpoint_lists_registered_tools_and_approval_metadata() -> None:
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(
+        transport=transport,
+        base_url="http://test",
+    ) as client:
+        response = await client.get("/tools")
+
+    assert response.status_code == 200
+    registered = {item["name"]: item for item in response.json()}
+    assert {"open_allowed_app", "create_text_file"}.issubset(registered)
+    assert registered["create_text_file"]["requires_approval"] is True
+    assert registered["create_text_file"]["risk"] == "medium"
+
+
+@pytest.mark.asyncio
 async def test_chat_endpoint_uses_the_fixed_system_prompt(monkeypatch) -> None:
     received_messages: list[dict[str, str]] = []
 
