@@ -8,13 +8,6 @@ const chatForm = document.getElementById("chatForm");
 const messageInput = document.getElementById("messageInput");
 const sendButton = document.getElementById("sendButton");
 const conversation = document.getElementById("conversation");
-const attachPdfButton = document.getElementById("attachPdfButton");
-const pdfInput = document.getElementById("pdfInput");
-const selectedPdfStatus = document.getElementById("selectedPdfStatus");
-const selectedPdfName = document.getElementById("selectedPdfName");
-const removePdfButton = document.getElementById("removePdfButton");
-const MAX_PDF_BYTES = 10 * 1024 * 1024;
-let selectedPdf = null;
 
 function setConnectionStatus(state, label) {
   connectionStatus.dataset.state = state;
@@ -121,73 +114,30 @@ function appendMessage(role, text) {
   conversation.scrollTop = conversation.scrollHeight;
 }
 
-function clearPdfSelection() {
-  selectedPdf = null;
-  pdfInput.value = "";
-  selectedPdfName.textContent = "";
-  selectedPdfStatus.hidden = true;
-}
-
-attachPdfButton.addEventListener("click", () => pdfInput.click());
-removePdfButton.addEventListener("click", clearPdfSelection);
-pdfInput.addEventListener("change", () => {
-  const file = pdfInput.files && pdfInput.files[0];
-  if (!file) return;
-  if (!file.name.toLowerCase().endsWith(".pdf")) {
-    clearPdfSelection();
-    appendMessage("assistant", "Please choose a PDF file.");
-    return;
-  }
-  if (file.size > MAX_PDF_BYTES) {
-    clearPdfSelection();
-    appendMessage("assistant", "That PDF exceeds the 10 MiB limit.");
-    return;
-  }
-  selectedPdf = file;
-  selectedPdfName.textContent = `${file.name} · ${Math.max(1, Math.ceil(file.size / 1024))} KiB`;
-  selectedPdfStatus.hidden = false;
-});
-
 chatForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const message = messageInput.value.trim();
-  const attachment = selectedPdf;
   if (!message || message.length > 4000 || sendButton.disabled) return;
 
-  const displayedMessage = attachment
-    ? `${message}\n\nAttached PDF: ${attachment.name}`
-    : message;
-  appendMessage("user", displayedMessage);
+  appendMessage("user", message);
   messageInput.value = "";
   sendButton.disabled = true;
-  sendButton.querySelector("span").textContent = attachment ? "Reading…" : "Thinking…";
+  sendButton.querySelector("span").textContent = "Thinking…";
   try {
-    const response = attachment
-      ? await fetch(`/chat/pdf`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/pdf",
-            "X-Chat-Message": message,
-            Accept: "application/json",
-          },
-          body: attachment,
-        })
-      : await fetch("/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify({ message }),
-        });
+    const response = await fetch("/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ message }),
+    });
     const result = await response.json();
     if (!response.ok) {
       const detail = typeof result.detail === "string" ? result.detail : "Local chat failed.";
       throw new Error(detail);
     }
     appendMessage("assistant", String(result.reply || "The local model returned an empty reply."));
-    if (attachment && selectedPdf === attachment) clearPdfSelection();
   } catch (error) {
     const detail = error instanceof Error ? error.message : "The local chat request failed.";
     appendMessage("assistant", `I couldn't complete that request. ${detail}`);
-    messageInput.value = message;
   } finally {
     sendButton.disabled = false;
     sendButton.querySelector("span").textContent = "Send";

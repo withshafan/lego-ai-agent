@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
-- **Current stage:** Local multimodal capabilities
-- **Current step:** Media.4 — Restart FastAPI and verify a local PDF attachment in the browser
+- **Current stage:** Work-focused local agent core
+- **Current step:** Agent.2 — Pull the no-attachment baseline and run the Windows test suite
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -65,9 +65,11 @@
   - Media.0 — Added `docs/local-media-attachments.md` with a safe local rollout plan: PDF text extraction first, vision model assessment before images, and bounded local video-frame extraction later.
   - Media.1 — Expanded the roadmap to include speech-to-text, text-to-speech, vision, image generation, and video. No new package or model weights have been downloaded.
   - Media.2 — User pulled and reviewed the expanded capabilities roadmap.
-  - Media.3 — Added an in-memory PDF chat endpoint and browser attachment control with 10 MiB, 40-page, and 12,000-character limits; added `pypdf`. User confirmed all 43 tests pass on Windows.
+  - Media.3 — Added an in-memory PDF upload path and browser control; user reported the live upload did not work despite 43 tests passing.
+  - Media.4 — Removed the PDF attachment control, endpoint, `pypdf` dependency, and PDF-specific tests at the user's request; media uploads are paused.
+  - Agent.1 — Updated the product roadmap to prioritize safe task execution through registered local tools rather than a text-only chat experience. Visual redesign remains deferred; all 37 tests pass locally.
 - **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account.
-- **Deferred:** UI/UX polish stays at the current baseline until the end of the creation phase. Image/video inference waits for a hardware check and verified local vision-model choice; no model download is authorized. Flutter Android remote control remains later roadmap work.
+- **Deferred:** PDF/image/video/speech attachment features remain paused until core task execution is working. UI/UX polish stays at the current baseline until the end of the creation phase. No model download is authorized; Flutter Android remote control remains later roadmap work.
 - **Exact next step:** Pull this change and run the full test suite using the Windows Python 3.12 virtual environment.
 
 File access remains restricted to `D:\pyProjects\lego-workspace`. File writes require registry approval; overwriting requires explicit approval. The app launcher uses only the fixed Notepad entry and never invokes a shell. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.

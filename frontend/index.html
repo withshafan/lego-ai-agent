@@ -74,17 +74,6 @@
           <form id="chatForm" class="composer">
             <label class="visually-hidden" for="messageInput">Message LEGO AI Agent</label>
             <textarea id="messageInput" name="message" rows="1" maxlength="4000" placeholder="Message your local assistant…" required></textarea>
-            <div class="attachment-row">
-              <div class="attachment-actions">
-                <button id="attachPdfButton" class="attach-button" type="button">＋ Attach PDF</button>
-                <input id="pdfInput" class="visually-hidden" type="file" accept="application/pdf,.pdf" aria-label="Choose a PDF to attach">
-                <span class="composer-hint">PDF only · up to 10 MiB</span>
-              </div>
-              <div id="selectedPdfStatus" class="selected-attachment" role="status" aria-live="polite" hidden>
-                <span id="selectedPdfName"></span>
-                <button id="removePdfButton" class="remove-attachment" type="button" aria-label="Remove attached PDF">Remove</button>
-              </div>
-            </div>
             <div class="composer-footer">
               <span class="composer-hint">Up to 4,000 characters · processed locally</span>
               <button id="sendButton" class="send-button" type="submit">

@@ -4,6 +4,7 @@
 
 ## Product goals
 
+- Make the agent task-first: help the user complete local work through safe, registered tools, not just produce chat text.
 - Keep the interface simple, readable, and friendly for one person using a local agent.
 - Make local-only operation visible: the UI is served by the local FastAPI process and uses same-origin, relative API URLs.
 - Keep all inference on the configured local Ollama service. No cloud APIs, remote assets, analytics, or telemetry.
@@ -22,16 +23,17 @@
    - Show each tool's name, short description, risk, and whether approval is required.
    - Selecting a tool opens a form based only on its returned JSON schema. Do not invent extra tool names or fields.
 
-3. **Main panel — Chat**
-   - Show user and assistant messages as plain text.
-   - Send one message to `POST /chat` as `{ "message": "..." }` and display the returned `reply`.
-   - Show a loading state while the local model responds and a plain, safe error if it is unavailable.
+3. **Main panel — Tasks and results**
+   - Center the user's requested task, a clear running/approval/completed state, and the result.
+   - Keep conversational text as the way to describe a task and receive a concise result.
+   - Separate model planning from execution; the model must not directly execute tools.
    - Do not render model output as HTML; insert it as text to avoid script injection.
 
-4. **Composer**
-   - Multi-line text box, send button, and a small note that messages go to the local model.
-   - Enforce the backend's 4,000-character maximum before sending.
-   - Disable repeat submission while a request is in flight.
+4. **Task composer**
+   - Multi-line request box and one clear action button.
+   - Show local status and explain that task execution uses only the fixed tool registry.
+   - Disable repeat submission while a task is in flight.
+   - No attachment controls in the current build; media is deferred.
 
 ## Tool action and approval flow
 
@@ -53,9 +55,10 @@
 ## Existing API contract used by v1
 
 - `GET /health` — local backend status.
-- `POST /chat` — one plain-text message and one reply; no tool execution.
+- `POST /chat` — one plain-text message and one reply; it does not execute tools.
 - `GET /tools` — fixed registry schemas and safety metadata.
 - `POST /tools/dispatch` — fixed registry dispatch; approval is false unless explicitly supplied.
+- A task-planning flow that connects user requests to safe registered tools is not implemented yet; this is the next core capability.
 
 All browser requests must use relative same-origin paths (`/health`, `/chat`, `/tools`, `/tools/dispatch`), not hard-coded `localhost` or `127.0.0.1` URLs.
 

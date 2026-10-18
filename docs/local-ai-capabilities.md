@@ -1,18 +1,20 @@
 # LEGO AI Agent — Local AI Capabilities Roadmap
 
-**Status:** The local PDF upload path is implemented with `pypdf`; the 43-test Windows suite passes, and live upload verification is pending. No new model weights have been installed. UI polish remains deferred until the end of the creation phase.
+**Status:** Media upload code has been removed after the live PDF test did not work. Keep PDF/image/video and all model-based media features deferred until the work-focused task flow is implemented. No new model weights have been installed. UI polish remains deferred until the end of the creation phase.
 
 ## Requested local capabilities
 
 | Capability | Local processing plan | Current status |
 | --- | --- | --- |
 | Text chat | Ollama with `llama3.2:3b` | Working |
-| PDF input | Extract embedded PDF text in memory, then send it to the text model | Implemented; Windows verification pending |
+| PDF input | Extract embedded PDF text in memory, then send it to the text model | Deferred; attachment control and endpoint removed |
 | Image understanding | Send selected image bytes to a local vision model | Requires separate vision-capable model and hardware check |
 | Video understanding | Sample a small number of frames locally; optionally transcribe audio locally | Later, after vision and speech-to-text work |
 | Speech-to-text (STT) | Use a local transcription engine for selected audio or microphone input | Planned; choose model/runtime after hardware check |
 | Text-to-speech (TTS) | Use a separate local voice engine to read assistant replies | Planned; check engine and voice license before choosing |
 | Image generation | Use a separate local diffusion pipeline; show output in the UI and save only after explicit user action | Planned; exact checkpoint and hardware not yet selected |
+
+**Current product priority:** Build LEGO AI Agent as a local, work-focused assistant that can carry out safe tasks through its fixed tool registry. Keep chat as a way to give tasks and receive results, not as the product's only capability. Media, voice, and image generation remain later phases until task execution is reliable.
 
 These are separate model capabilities, not one universal model. We will expose model/engine availability in the UI, but will not download every model or load every large model at once. A downloaded model can be selected only after its exact tag, license, storage location, and hardware requirements are verified.
 
