@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Stage 6 — Terminal chat with the local model
-- **Current step:** 6.1 — Sync and verify the `lego` package identity
+- **Current step:** 6.2 — Sync and verify the active model configuration
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -22,10 +22,11 @@
   - Stage 3.4 — Added `requirements.txt` with FastAPI, Uvicorn, HTTPX, Pydantic v2, pydantic-settings, pytest, and pytest-asyncio.
   - Stage 3.5 — Pushed setup files to `origin/arena/468202c8-lego-ai-agent`; user fetched and switched the Windows checkout to that branch and verified `requirements.txt`.
   - Stage 3.6 — Installed requirements in `.venv`; verified package imports and Pydantic 2.14.1.
-  - Stage 5.1 — Started Ollama after quitting the tray app; logs show `OLLAMA_MODELS=D:\pyProjects\ollama\models`, seven blobs detected, and listening on `127.0.0.1:11434`.
+  - Stage 5.1 — Started Ollama after quitting the tray app; server logs showed the configured model folder, seven blobs, and localhost listener.
   - Stage 5.2 — Async HTTPX request to `/api/tags` returned `llama3.2:3b` and its model details.
+  - Stage 6.1 — Pulled the active branch and verified `lego.APP_NAME` and `lego.__version__` from the Python 3.12 virtual environment.
 - **Known issues:** The bare `ollama` command is not resolved by PowerShell; use the full executable path. Keep the Ollama server terminal open during local requests.
 - **Deferred:** None.
-- **Exact next step:** Pull the latest active branch into the Windows checkout and verify `backend/lego/__init__.py` imports `APP_NAME` and `__version__`.
+- **Exact next step:** Pull the active branch and verify `models/config.json` lists `llama3.2:3b`, localhost URL, `num_ctx` 4096, temperature 0.2, and seed 42.
 
-The repository now has its initial package identity. Model files are outside the repository and user profile. Ollama is bound to `127.0.0.1:11434`, uses CPU inference, and defaults to a 4096-token context.
+The repository now has its package identity and active model configuration. Model weights remain outside the repository and user profile. Ollama is bound to `127.0.0.1:11434`; inference is CPU-only with a 4096-token request context.
