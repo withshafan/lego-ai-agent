@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
-- **Current stage:** Stage 7 — Safe local tools
-- **Current step:** 7.12 — Verify the explicit content approval gate
+- **Current stage:** Stage 8 — Local FastAPI backend
+- **Current step:** 8.1 — Add and test a minimal localhost-only health endpoint
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -40,8 +40,9 @@
   - Stage 7.9 — Registry dispatch launched the allowlisted Notepad tool successfully.
   - Stage 7.10 — Added approval-gated text-file creation with sandbox validation, 2,000-character limit, explicit overwrite, and atomic writes.
   - Stage 7.11 — User confirmed all 27 current tests pass on Windows.
+  - Stage 7.12 — User confirmed the approved test file exists with the exact content; a duplicate create was safely refused without overwriting.
 - **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account.
-- **Deferred:** Desktop web UI and Flutter Android client remain later roadmap work; do not start before Stage 8 backend/API is working.
-- **Exact next step:** Present the complete proposed text content and target path; wait for explicit approval before calling `create_text_file`.
+- **Deferred:** Desktop UI/UX and web UI begin after the local API is working; Flutter Android remote control is later roadmap work.
+- **Exact next step:** Add a minimal FastAPI app with a localhost health endpoint and a focused test.
 
-File access remains restricted to `D:\pyProjects\lego-workspace`. The app launcher uses only the fixed Notepad entry and never invokes a shell. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.
+File access remains restricted to `D:\pyProjects\lego-workspace`. File writes require registry approval; overwriting requires explicit approval. The app launcher uses only the fixed Notepad entry and never invokes a shell. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.
