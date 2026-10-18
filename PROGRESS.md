@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Desktop UI/UX — local web interface
-- **Current step:** UI.3 — Pull the first web UI and run the Windows test suite
+- **Current step:** UI.4 — Restart FastAPI and open the local web interface
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -58,6 +58,7 @@
   - Stage 8.15 — User verified live API dispatch opened the allowlisted Notepad application successfully.
   - UI.1 — Wrote `docs/desktop-ui-ux.md`, defining the local-first layout, chat, tool catalog, exact-content approval review, accessibility, and API contracts.
   - UI.2 — Added the first responsive HTML/CSS/JavaScript chat shell, served by FastAPI at `/`; it checks backend health, loads registered tool metadata, sends local chat messages, and renders responses as inert text. The full suite passed locally with 37 tests.
+  - UI.3 — User confirmed all 37 tests pass on Windows.
 - **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account.
 - **Deferred:** Flutter Android remote control remains later roadmap work; the local web UI is now the active phase.
 - **Exact next step:** Pull this change and run the full test suite using the Windows Python 3.12 virtual environment.
