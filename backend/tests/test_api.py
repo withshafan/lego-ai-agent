@@ -8,6 +8,15 @@ from lego.agent.prompts import CHAT_SYSTEM_PROMPT
 from lego.tools.registry import ToolResult
 
 
+async def _get(path: str) -> httpx.Response:
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(
+        transport=transport,
+        base_url="http://test",
+    ) as client:
+        return await client.get(path)
+
+
 async def _post_json(path: str, payload: dict[str, object]) -> httpx.Response:
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(
@@ -15,6 +24,30 @@ async def _post_json(path: str, payload: dict[str, object]) -> httpx.Response:
         base_url="http://test",
     ) as client:
         return await client.post(path, json=payload)
+
+
+@pytest.mark.asyncio
+async def test_home_serves_the_local_frontend_and_relative_assets() -> None:
+    response = await _get("/")
+
+    assert response.status_code == 200
+    assert 'href="/static/styles.css"' in response.text
+    assert 'src="/static/app.js"' in response.text
+    assert "http://" not in response.text
+    assert "https://" not in response.text
+
+
+@pytest.mark.asyncio
+async def test_frontend_javascript_uses_relative_api_and_safe_text_rendering() -> None:
+    response = await _get("/static/app.js")
+
+    assert response.status_code == 200
+    assert 'fetch("/chat"' in response.text
+    assert 'fetch("/tools"' in response.text
+    assert 'fetch("/health"' in response.text
+    assert "innerHTML" not in response.text
+    assert "127.0.0.1" not in response.text
+    assert "localhost" not in response.text
 
 
 @pytest.mark.asyncio

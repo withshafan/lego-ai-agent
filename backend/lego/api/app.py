@@ -1,9 +1,12 @@
 """Local FastAPI entry point for LEGO AI Agent."""
 
 import logging
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from lego import APP_NAME, __version__
@@ -11,7 +14,15 @@ from lego.agent.llm import OllamaError, chat
 from lego.agent.prompts import CHAT_SYSTEM_PROMPT
 from lego.tools.registry import ToolResult, dispatch, schemas as tool_schemas
 
+_REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+_FRONTEND_ROOT = _REPOSITORY_ROOT / "frontend"
+
 app = FastAPI(title=APP_NAME, version=__version__)
+app.mount(
+    "/static",
+    StaticFiles(directory=str(_FRONTEND_ROOT / "static")),
+    name="static",
+)
 _audit_logger = logging.getLogger("lego.audit")
 _audit_logger.setLevel(logging.INFO)
 if not _audit_logger.handlers:
@@ -51,6 +62,12 @@ class ToolDispatchRequest(BaseModel):
     name: str = Field(pattern=r"^[A-Za-z][A-Za-z0-9_]{0,63}$")
     arguments: dict[str, Any] = Field(default_factory=dict)
     approved: bool = False
+
+
+@app.get("/", include_in_schema=False)
+def home() -> FileResponse:
+    """Serve the local desktop web interface from the project frontend folder."""
+    return FileResponse(_FRONTEND_ROOT / "index.html")
 
 
 @app.get("/health", tags=["system"])

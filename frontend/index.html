@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>LEGO AI Agent</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="LEGO AI Agent home">
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span class="brand-copy">
+            <strong>LEGO AI Agent</strong>
+            <small>Your local assistant</small>
+          </span>
+        </a>
+        <div class="connection-wrap">
+          <span class="local-pill"><span class="local-dot" aria-hidden="true"></span>Local only</span>
+          <span id="connectionStatus" class="connection-status" role="status" aria-live="polite">
+            Checking connection…
+          </span>
+          <button id="retryConnection" class="icon-button" type="button" aria-label="Check connection again" title="Check connection again">
+            ↻
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="tools-panel" aria-labelledby="toolsHeading">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">CAPABILITIES</p>
+              <h2 id="toolsHeading">Your tools</h2>
+            </div>
+            <span id="toolCount" class="count-badge">—</span>
+          </div>
+          <p class="panel-intro">Only registered tools are available. Actions that need approval will ask first.</p>
+          <div id="toolsList" class="tools-list" aria-live="polite">
+            <p class="muted-message">Loading local tools…</p>
+          </div>
+          <div class="privacy-note">
+            <span class="privacy-icon" aria-hidden="true">●</span>
+            <p><strong>Private by design</strong><br>Chat and tools stay on this computer.</p>
+          </div>
+        </aside>
+
+        <section class="chat-panel" aria-labelledby="chatHeading">
+          <div class="chat-heading">
+            <div class="avatar" aria-hidden="true">L</div>
+            <div>
+              <p class="eyebrow">LOCAL CHAT</p>
+              <h1 id="chatHeading">Let’s build something</h1>
+            </div>
+            <span class="model-chip"><span class="model-dot" aria-hidden="true"></span>Ollama</span>
+          </div>
+
+          <div id="conversation" class="conversation" aria-live="polite" aria-relevant="additions text">
+            <article class="message assistant-message">
+              <div class="message-avatar" aria-hidden="true">L</div>
+              <div class="message-content">
+                <p class="message-label">LEGO AI Agent</p>
+                <div class="message-bubble">
+                  <p>Hi! I’m your personal local AI agent. Ask me a question, or explore the registered tools on the left.</p>
+                  <p class="message-footnote">This first version sends each message independently.</p>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <form id="chatForm" class="composer">
+            <label class="visually-hidden" for="messageInput">Message LEGO AI Agent</label>
+            <textarea id="messageInput" name="message" rows="1" maxlength="4000" placeholder="Message your local assistant…" required></textarea>
+            <div class="composer-footer">
+              <span class="composer-hint">Up to 4,000 characters · processed locally</span>
+              <button id="sendButton" class="send-button" type="submit">
+                <span>Send</span><span aria-hidden="true">↑</span>
+              </button>
+            </div>
+          </form>
+          <p class="bottom-note">LEGO AI Agent can make mistakes. Review tool actions before approving them.</p>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
