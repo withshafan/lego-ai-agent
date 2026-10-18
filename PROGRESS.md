@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Stage 7 — Safe local tools
-- **Current step:** 7.1 — Create and verify the single approved folder
+- **Current step:** 7.2 — Sync and verify the approved-folder allowlist
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -26,11 +26,12 @@
   - Stage 5.2 — Async HTTPX request to `/api/tags` returned `llama3.2:3b` and its model details.
   - Stage 6.1 — Verified `lego.APP_NAME` and `lego.__version__` from the Python 3.12 virtual environment.
   - Stage 6.2 — Validated `models/config.json`; it selects `llama3.2:3b`, localhost Ollama, context 4096, temperature 0.2, and seed 42.
-  - Stage 6.3 — Added an async HTTPX Ollama client with validated local-only settings and readable errors; user verified a live response.
+  - Stage 6.3 — Added an async HTTPX Ollama client; user verified a live response.
   - Stage 6.4 — Added the system prompt and terminal CLI; user verified one-shot mode returned `LOCAL CLI WORKS`.
-  - Stage 6.5 — User verified interactive chat, received the required self-introduction, exited with `/exit`, and pulled the active branch successfully using an explicit remote and branch.
-- **Known issues:** The bare `ollama` command is not resolved by PowerShell; use the full executable path. Keep the Ollama server terminal open during local requests.
+  - Stage 6.5 — User verified interactive chat, exited with `/exit`, and pulled the active branch with an explicit remote and branch.
+  - Stage 7.1 — User created and verified the approved folder `D:\pyProjects\lego-workspace` outside the repository.
+- **Known issues:** The Git local branch has ambiguous upstream settings; sync with `git pull --ff-only origin arena/468202c8-lego-ai-agent`. The bare `ollama` command is not resolved; use its full path.
 - **Deferred:** None.
-- **Exact next step:** Create the space-free approved workspace folder `D:\pyProjects\lego-workspace` outside the Git repository and verify its path.
+- **Exact next step:** Pull the current branch and verify `backend/lego/config/allowed_folders.txt` contains only `D:\pyProjects\lego-workspace`.
 
-The project now has a working local terminal chat. The next phase is limited to approved tools; file access must remain inside one separate approved folder. Model weights remain outside the repository and user profile.
+The project has a local terminal chat. Safe tools must be restricted to the single approved folder. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.
