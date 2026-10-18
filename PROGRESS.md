@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Desktop UI/UX — local web interface
-- **Current step:** UI.4 — Restart FastAPI and open the local web interface
+- **Current step:** UI.5 — Verify chat from the browser interface
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -59,8 +59,10 @@
   - UI.1 — Wrote `docs/desktop-ui-ux.md`, defining the local-first layout, chat, tool catalog, exact-content approval review, accessibility, and API contracts.
   - UI.2 — Added the first responsive HTML/CSS/JavaScript chat shell, served by FastAPI at `/`; it checks backend health, loads registered tool metadata, sends local chat messages, and renders responses as inert text. The full suite passed locally with 37 tests.
   - UI.3 — User confirmed all 37 tests pass on Windows.
+  - UI.4 — User confirmed the local web interface is running and visible in the browser.
+  - UI decision — Defer visual and interaction refinements until the end of the creation phase; keep the current baseline while functionality is built.
 - **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account.
-- **Deferred:** Flutter Android remote control remains later roadmap work; the local web UI is now the active phase.
+- **Deferred:** UI/UX refinements are intentionally postponed until the end of the creation phase. Flutter Android remote control remains later roadmap work.
 - **Exact next step:** Pull this change and run the full test suite using the Windows Python 3.12 virtual environment.
 
 File access remains restricted to `D:\pyProjects\lego-workspace`. File writes require registry approval; overwriting requires explicit approval. The app launcher uses only the fixed Notepad entry and never invokes a shell. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.
