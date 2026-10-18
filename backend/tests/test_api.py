@@ -5,9 +5,10 @@ import lego.api.app as api_module
 from lego.api.app import app
 from lego.agent.llm import OllamaError
 from lego.agent.prompts import CHAT_SYSTEM_PROMPT
+from lego.tools.registry import ToolResult
 
 
-async def _post_json(path: str, payload: dict[str, str]) -> httpx.Response:
+async def _post_json(path: str, payload: dict[str, object]) -> httpx.Response:
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(
         transport=transport,
@@ -47,6 +48,76 @@ async def test_tools_endpoint_lists_registered_tools_and_approval_metadata() -> 
     assert {"open_allowed_app", "create_text_file"}.issubset(registered)
     assert registered["create_text_file"]["requires_approval"] is True
     assert registered["create_text_file"]["risk"] == "medium"
+
+
+@pytest.mark.asyncio
+async def test_tool_dispatch_denies_file_write_without_approval() -> None:
+    response = await _post_json(
+        "/tools/dispatch",
+        {
+            "name": "create_text_file",
+            "arguments": {"path": "blocked.txt", "content": "not written"},
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["success"] is False
+    assert response.json()["error"] == "Approval required."
+
+
+@pytest.mark.asyncio
+async def test_tool_dispatch_passes_explicit_approval_and_audits_metadata(
+    monkeypatch, caplog
+) -> None:
+    received: list[tuple[str, dict[str, object], bool]] = []
+
+    def fake_dispatch(
+        name: str,
+        arguments: dict[str, object],
+        *,
+        approved: bool = False,
+    ) -> ToolResult:
+        received.append((name, arguments, approved))
+        return ToolResult(success=True, message="Approved action ran.")
+
+    monkeypatch.setattr(api_module, "dispatch", fake_dispatch)
+    secret_content = "private text must not enter the audit log"
+    with caplog.at_level("INFO", logger="lego.audit"):
+        response = await _post_json(
+            "/tools/dispatch",
+            {
+                "name": "create_text_file",
+                "arguments": {"path": "private.txt", "content": secret_content},
+                "approved": True,
+            },
+        )
+
+    assert response.status_code == 200
+    assert response.json()["success"] is True
+    assert received == [
+        (
+            "create_text_file",
+            {"path": "private.txt", "content": secret_content},
+            True,
+        )
+    ]
+    assert "tool_dispatch name=create_text_file approved=True success=True" in caplog.text
+    assert "private.txt" not in caplog.text
+    assert secret_content not in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_tool_dispatch_rejects_unexpected_request_fields() -> None:
+    response = await _post_json(
+        "/tools/dispatch",
+        {
+            "name": "open_allowed_app",
+            "arguments": {"app": "notepad"},
+            "command": "not accepted",
+        },
+    )
+
+    assert response.status_code == 422
 
 
 @pytest.mark.asyncio

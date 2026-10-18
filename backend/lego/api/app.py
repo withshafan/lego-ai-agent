@@ -1,16 +1,26 @@
 """Local FastAPI entry point for LEGO AI Agent."""
 
+import logging
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from lego import APP_NAME, __version__
 from lego.agent.llm import OllamaError, chat
 from lego.agent.prompts import CHAT_SYSTEM_PROMPT
-from lego.tools.registry import schemas as tool_schemas
+from lego.tools.registry import ToolResult, dispatch, schemas as tool_schemas
 
 app = FastAPI(title=APP_NAME, version=__version__)
+_audit_logger = logging.getLogger("lego.audit")
+_audit_logger.setLevel(logging.INFO)
+if not _audit_logger.handlers:
+    _audit_handler = logging.StreamHandler()
+    _audit_handler.setFormatter(
+        logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+    )
+    _audit_logger.addHandler(_audit_handler)
+_audit_logger.propagate = False
 
 
 class ChatRequest(BaseModel):
@@ -33,6 +43,16 @@ class ChatResponse(BaseModel):
     reply: str
 
 
+class ToolDispatchRequest(BaseModel):
+    """Request one registered tool; approval is false unless explicitly set."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(pattern=r"^[A-Za-z][A-Za-z0-9_]{0,63}$")
+    arguments: dict[str, Any] = Field(default_factory=dict)
+    approved: bool = False
+
+
 @app.get("/health", tags=["system"])
 def health() -> dict[str, str]:
     """Report that the local backend process is responding."""
@@ -43,6 +63,24 @@ def health() -> dict[str, str]:
 def list_tools() -> list[dict[str, Any]]:
     """Return schemas and safety metadata for explicitly registered tools."""
     return tool_schemas()
+
+
+@app.post("/tools/dispatch", response_model=ToolResult, tags=["tools"])
+def dispatch_tool(request: ToolDispatchRequest) -> ToolResult:
+    """Dispatch only a registered tool; approval-required calls default to denied."""
+    result = dispatch(
+        request.name,
+        request.arguments,
+        approved=request.approved,
+    )
+    # Audit metadata only: never include arguments, file content, or secrets.
+    _audit_logger.info(
+        "tool_dispatch name=%s approved=%s success=%s",
+        request.name,
+        request.approved,
+        result.success,
+    )
+    return result
 
 
 @app.post("/chat", response_model=ChatResponse, tags=["chat"])

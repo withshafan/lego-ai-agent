@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Stage 8 — Local FastAPI backend
-- **Current step:** 8.11 — Restart the API and verify `GET /tools` live
+- **Current step:** 8.13 — Pull and verify the approval-gated tool dispatch API on Windows
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -51,6 +51,8 @@
   - Stage 8.8 — User verified a live `/chat` request returned a greeting from the local Ollama model.
   - Stage 8.9 — Added read-only `GET /tools` to expose registered tool schemas and approval metadata; all 32 tests passed locally.
   - Stage 8.10 — User confirmed all 32 tests pass on Windows.
+  - Stage 8.11 — User verified live `GET /tools` returned the two registered tools and showed that file creation requires approval.
+  - Stage 8.12 — Added `POST /tools/dispatch`; approval-required calls default to denied, explicit approval is forwarded to the registry, request extras are rejected, and audit output logs metadata only. All 35 tests passed locally.
 - **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account.
 - **Deferred:** Desktop UI/UX and web UI begin after the local API is working; Flutter Android remote control is later roadmap work.
 - **Exact next step:** Pull this change and run the full test suite using the Windows Python 3.12 virtual environment.
