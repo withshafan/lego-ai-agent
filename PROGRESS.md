@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Work-focused local agent core
-- **Current step:** Agent.5 — Verify a registered no-approval tool through `/agent/task`
+- **Current step:** Agent.5a — Diagnose the invalid live tool proposal before retrying
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -71,9 +71,10 @@
   - Agent.2 — Added Ollama tool-call proposal parsing and `POST /agent/task`. Proposals are validated against the registered tool schemas; only tools marked as not requiring approval can run. Approval-required actions are returned for review without dispatch, unknown or invalid proposals are rejected, and multi-action proposals run nothing. Audit logs contain metadata only.
   - Agent.2 tests — Added planner/client, registry-preparation, approval-gate, unknown-tool, and multi-proposal tests. Full suite passes locally: **47 passed**.
   - Agent.3 — User pulled the task planner and confirmed **47 tests pass on Windows**.
-  - Agent.4 — User started the updated FastAPI server on localhost; live Ollama tool dispatch is the next verification.
-- **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account. The planner endpoint is not yet connected to the browser composer or an approval review UI.
+  - Agent.4 — User started the updated FastAPI server on localhost.
+  - Agent.5 — The live `/agent/task` request returned `The tool arguments are invalid.` The backend rejected the proposal before dispatch; check the metadata-only audit line to identify the proposed registered tool before retrying.
+- **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account. The planner endpoint is not yet connected to the browser composer or an approval review UI. Live task planning currently receives an invalid tool argument; diagnose from the API audit line before retrying.
 - **Deferred:** PDF/image/video/speech attachment features remain paused until core task execution is working. UI/UX polish stays at the current baseline until the end of the creation phase. No model download is authorized; Flutter Android remote control remains later roadmap work.
-- **Exact next step:** With the API and Ollama running, use PowerShell `Invoke-RestMethod` to POST `{"message":"Open the allowlisted Notepad application now."}` to `http://127.0.0.1:8000/agent/task`. Expected: `status=completed`, action `open_allowed_app`, and `result.success=true`; Notepad may open.
+- **Exact next step:** In the PowerShell window running Uvicorn, copy the latest metadata-only log line beginning `agent_task status=failed` and share it. It identifies the proposed tool without recording its arguments or content.
 
 File access remains restricted to `D:\pyProjects\lego-workspace`. File writes require registry approval; overwriting requires explicit approval. The app launcher uses only the fixed Notepad entry and never invokes a shell. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.
