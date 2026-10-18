@@ -1,6 +1,6 @@
 # LEGO AI Agent — Local AI Capabilities Roadmap
 
-**Status:** The local PDF upload path is implemented with `pypdf`; Windows verification is pending. No new model weights have been installed. UI polish remains deferred until the end of the creation phase.
+**Status:** The local PDF upload path is implemented with `pypdf`; the 43-test Windows suite passes, and live upload verification is pending. No new model weights have been installed. UI polish remains deferred until the end of the creation phase.
 
 ## Requested local capabilities
 

@@ -1,6 +1,6 @@
 # Local Media Attachments — Implementation Plan
 
-**Status:** PDF text upload is implemented; Windows verification is pending. Image/video support remains planned. Keep the current UI appearance stable; defer visual polish until the end of the creation phase.
+**Status:** PDF text upload is implemented and the Windows test suite passes; live browser upload verification is pending. Image/video support remains planned. Keep the current UI appearance stable; defer visual polish until the end of the creation phase.
 
 ## Goals and boundaries
 
