@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Stage 8 — Local FastAPI backend
-- **Current step:** 8.5 — Pull and test the chat endpoint on Windows
+- **Current step:** 8.6 — Inspect the preserved local API changes before deciding whether to reapply them
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -45,6 +45,7 @@
   - Stage 8.2 — User confirmed all 28 tests pass on Windows.
   - Stage 8.3 — User verified the running API health endpoint returned `ok`, `LEGO AI Agent`, and version `0.1.0`.
   - Stage 8.4 — Added a bounded single-message `/chat` route with the fixed system prompt, local Ollama forwarding, and a safe failure response; all 31 tests passed locally.
+  - Stage 8.5 — User confirmed all 31 tests pass on Windows after pulling the chat endpoint.
 - **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account.
 - **Deferred:** Desktop UI/UX and web UI begin after the local API is working; Flutter Android remote control is later roadmap work.
 - **Exact next step:** Pull this change and run the full test suite using the Windows Python 3.12 virtual environment.
