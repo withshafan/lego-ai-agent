@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Stage 7 — Safe local tools
-- **Current step:** 7.7 — Sync and run registry plus sandbox tests on Windows
+- **Current step:** 7.8 — Sync and test the approved Notepad launcher on Windows
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -34,9 +34,10 @@
   - Stage 7.3 — Implemented the one-root path sandbox, traversal/outside/symlink checks, and focused tests.
   - Stage 7.4 — User pulled the sandbox and confirmed all nine tests pass on Windows.
   - Stage 7.5 — Added `allowed_apps.json`; user confirmed Notepad is the only allowlisted app.
-  - Stage 7.6 — Added a fixed registry with Pydantic argument validation, JSON schemas, safe ToolResult errors, and approval enforcement; all 16 registry and sandbox tests passed in the development environment.
+  - Stage 7.6 — Added a fixed registry with JSON schemas, validation, safe errors, and an approval gate.
+  - Stage 7.7 — User confirmed all 16 registry and sandbox tests pass on Windows.
 - **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink test may be skipped if symlink creation is disabled for the account.
 - **Deferred:** None.
-- **Exact next step:** Pull the current branch and run the combined registry and sandbox tests with the Python 3.12 virtual environment.
+- **Exact next step:** Pull the approved Notepad launcher and run the full test suite with the Python 3.12 virtual environment.
 
-The safe-tools phase is limited to the single approved folder. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.
+File access remains restricted to `D:\pyProjects\lego-workspace`. The app launcher uses only the fixed Notepad entry and never invokes a shell. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.
