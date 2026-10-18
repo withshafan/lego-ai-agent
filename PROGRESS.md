@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Stage 7 — Safe local tools
-- **Current step:** 7.4 — Sync and run the sandbox tests on Windows
+- **Current step:** 7.5 — Sync and verify the Notepad allowlist
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -31,9 +31,10 @@
   - Stage 6.5 — User verified interactive chat, exited with `/exit`, and pulled the active branch using the explicit remote and branch.
   - Stage 7.1 — User created and verified `D:\pyProjects\lego-workspace` outside the repository.
   - Stage 7.2 — Added `backend/lego/config/allowed_folders.txt`; user verified the single path.
-  - Stage 7.3 — Implemented the one-root path sandbox, traversal/outside/symlink checks, and nine focused tests; all nine passed in the development environment.
+  - Stage 7.3 — Implemented the one-root path sandbox, traversal/outside/symlink checks, and nine focused tests.
+  - Stage 7.4 — User pulled the sandbox and confirmed all nine tests pass on Windows.
 - **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink test may be skipped if symlink creation is disabled for the account.
 - **Deferred:** None.
-- **Exact next step:** Pull the latest branch on Windows and run `backend/tests/test_sandbox.py` with the project virtual environment.
+- **Exact next step:** Pull and verify `backend/lego/config/allowed_apps.json`, which allowlists only Notepad with no user-controlled arguments.
 
-File access remains restricted to `D:\pyProjects\lego-workspace`. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.
+The safe-tools phase is limited to the single approved folder. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.

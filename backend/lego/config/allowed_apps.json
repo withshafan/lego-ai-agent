@@ -1,0 +1,6 @@
+{
+  "notepad": {
+    "command": "notepad.exe",
+    "args": []
+  }
+}
