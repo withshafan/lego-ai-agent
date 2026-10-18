@@ -1,7 +1,7 @@
 # LEGO AI Agent — Progress
 
 - **Current stage:** Work-focused local agent core
-- **Current step:** Agent.8 — Re-test live task planning with the updated app-key validation
+- **Current step:** Agent.7a — Identify the existing process listening on localhost port 8000
 - **Completed:**
   - Stage 1.1 — Checked Python availability; Python 3.14.3 was initially the only standard per-user installation found.
   - Stage 1.2 — Searched the Windows package catalog and confirmed `Python.Python.3.12` version 3.12.10.
@@ -75,9 +75,9 @@
   - Agent.5 — User's live `/agent/task` request returned `The tool arguments are invalid.` The backend rejected the proposal before dispatch. The provided transcript showed the app-key schema requires lowercase but did not include the audit line identifying which tool the model proposed.
   - Agent.5a — Made app-key validation case/whitespace tolerant (`Notepad` normalizes to `notepad`) while retaining the lowercase format check and allowlist enforcement. Clarified the key in the tool schema. Full suite passes locally: **48 passed**.
   - Agent.6 — User pulled commit `870c3fa`; the first Windows pytest collection attempt lacked the backend package path and did not run tests. User then set `PYTHONPATH` and confirmed **48 tests passed on Windows**.
-  - Agent.7 — User restarted the API after pulling the app-key normalization fix; ready for a live local task request.
-- **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account. The planner endpoint is not yet connected to the browser composer or an approval review UI. Live invalid-argument response's proposed tool is still unknown because its API audit line was not included; app-key normalization remains a likely, unconfirmed correction. Windows test imports need `$env:PYTHONPATH='D:\pyProjects\lego-ai-agent\backend'` before pytest.
+  - Agent.7 — API restart attempt exited with Windows `WinError 10048`: localhost port 8000 is already in use. No process should be terminated until its owner is identified.
+- **Known issues:** The bare `ollama` command is not resolved by PowerShell; use its full executable path. Use explicit remote and branch arguments for Git pulls. Windows symlink tests may be skipped if symlink creation is disabled for the account. The planner endpoint is not yet connected to the browser composer or an approval review UI. Live invalid-argument response's proposed tool is still unknown because its API audit line was not included; app-key normalization remains a likely, unconfirmed correction. Windows test imports need `$env:PYTHONPATH='D:\pyProjects\lego-ai-agent\backend'` before pytest. Port 8000 is currently occupied by an unidentified process; inspect its owner before stopping it.
 - **Deferred:** PDF/image/video/speech attachment features remain paused until core task execution is working. UI/UX polish stays at the current baseline until the end of the creation phase. No model download is authorized; Flutter Android remote control remains later roadmap work.
-- **Exact next step:** With Ollama and the updated API running, POST `{"message":"Open the allowlisted Notepad application using the key notepad."}` to `http://127.0.0.1:8000/agent/task` using PowerShell `Invoke-RestMethod`. Expected: `status=completed`, action `open_allowed_app`, and `result.success=true`; Notepad may open.
+- **Exact next step:** In PowerShell, identify the listener on port 8000: `$listener = Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue; $listener | Select-Object LocalAddress,LocalPort,OwningProcess; $listener | ForEach-Object { Get-Process -Id $_.OwningProcess | Select-Object Id,ProcessName }`. Share the output; do not stop an unidentified process.
 
 File access remains restricted to `D:\pyProjects\lego-workspace`. File writes require registry approval; overwriting requires explicit approval. The app launcher uses only the fixed Notepad entry and never invokes a shell. Model weights stay outside the repository and user profile; Ollama stays on `127.0.0.1:11434`.
